@@ -17,18 +17,22 @@
  */
 package org.jboss.as.quickstarts.picketlink.authentication.facebook;
 
-import org.picketlink.Identity;
-import org.picketlink.social.auth.FacebookAuthenticator;
-import org.picketlink.social.auth.conf.FacebookConfiguration;
+import java.io.IOException;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.picketlink.Identity;
 
 /**
  * Filter for Facebook Login
@@ -37,7 +41,7 @@ import java.io.IOException;
  */
 @ApplicationScoped
 @WebFilter("/*")
-public class FacebookFilter implements Filter{
+public class FacebookFilter implements Filter {
     @Inject
     private Instance<Identity> identityInstance;
 

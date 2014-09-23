@@ -18,17 +18,19 @@
 package org.jboss.as.quickstarts.picketlink.authentication.facebook;
 
 
-import org.picketlink.annotations.PicketLink;
-import org.picketlink.authentication.Authenticator;
-import org.picketlink.social.auth.FacebookAuthenticator;
-import org.picketlink.social.auth.conf.FacebookConfiguration;
-
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.jboss.as.quickstarts.picketlink.authentication.authenticator.LocalAuthenticator;
+import org.picketlink.annotations.PicketLink;
+import org.picketlink.authentication.Authenticator;
+import org.picketlink.credential.DefaultLoginCredentials;
+import org.picketlink.social.auth.FacebookAuthenticator;
+import org.picketlink.social.auth.conf.FacebookConfiguration;
 
 /**
  * Bean that allows selection of {@link Authenticator}
@@ -40,6 +42,9 @@ public class AuthenticatorSelector {
 
     @Inject
     private FacebookConfiguration facebookConfiguration;
+    
+    @Inject
+	DefaultLoginCredentials credentials;
 
     @PicketLink
     @Produces
@@ -51,15 +56,21 @@ public class AuthenticatorSelector {
         String login = httpServletRequest.getParameter("login");
         Authenticator authenticator = null;
 
-        if(login == null || login.equals("facebook")){
-            FacebookAuthenticator facebookAuthenticator = new FacebookAuthenticator();
-            facebookAuthenticator.setHttpServletRequest(httpServletRequest);
-            facebookAuthenticator.setHttpServletResponse(httpServletResponse);
-            facebookAuthenticator.setConfiguration(facebookConfiguration);
-            authenticator = facebookAuthenticator;
-        }else if(login.equals("delta")){
-        	
-        }
+        if (login.equals("facebook")) {
+			//System.out.println("login = null o login igual fb");
+			FacebookAuthenticator facebookAuthenticator = new FacebookAuthenticator();
+			facebookAuthenticator.setHttpServletRequest(httpServletRequest);
+			facebookAuthenticator.setHttpServletResponse(httpServletResponse);
+			facebookAuthenticator.setConfiguration(facebookConfiguration);
+			authenticator = facebookAuthenticator;
+		} else if (login.equals("local")) {
+			//System.out.println(credentials);
+			LocalAuthenticator localAuthenticator = new LocalAuthenticator();
+			//httpServletRequest.setAttribute("Vamos", credentials);
+			localAuthenticator.setHttpServletRequest(httpServletRequest);
+			localAuthenticator.setHttpServletResponse(httpServletResponse);
+			authenticator = localAuthenticator;
+		}
         return authenticator;
     }
 }
